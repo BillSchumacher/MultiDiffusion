@@ -40,7 +40,7 @@ class MultiDiffusion(nn.Module):
         self.device = device
         self.sd_version = sd_version
 
-        print(f'[INFO] loading stable diffusion...')
+        print('[INFO] loading stable diffusion...')
         if hf_key is not None:
             print(f'[INFO] using hugging face custom model key: {hf_key}')
             model_key = hf_key
@@ -61,7 +61,7 @@ class MultiDiffusion(nn.Module):
 
         self.scheduler = DDIMScheduler.from_pretrained(model_key, subfolder="scheduler")
 
-        print(f'[INFO] loaded stable diffusion!')
+        print('[INFO] loaded stable diffusion!')
 
     @torch.no_grad()
     def get_text_embeds(self, prompt, negative_prompt):
@@ -111,7 +111,7 @@ class MultiDiffusion(nn.Module):
         self.scheduler.set_timesteps(num_inference_steps)
 
         with torch.autocast('cuda'):
-            for i, t in enumerate(self.scheduler.timesteps):
+            for t in self.scheduler.timesteps:
                 count.zero_()
                 value.zero_()
 
@@ -139,8 +139,7 @@ class MultiDiffusion(nn.Module):
 
         # Img latents -> imgs
         imgs = self.decode_latents(latent)  # [1, 3, 512, 512]
-        img = T.ToPILImage()(imgs[0].cpu())
-        return img
+        return T.ToPILImage()(imgs[0].cpu())
 
 
 if __name__ == '__main__':
